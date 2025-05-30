@@ -18,20 +18,16 @@ jobs:
         with:
           gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
-#      - name: Update Licenses file
-#        run: ./gradlew composeApp:exportLibraryDefinitions -PaboutLibraries.exportPath=src/main/resources/
-
       - name: Create path variables
         id: path_variables
-        # tag=$(git describe --tags --abbrev=0 --match "*-desktop")
         run: |
           version=$(grep "appVersionName" composeApp/gradle.properties | cut -d'=' -f2)
-          name_deb="VacApp-${version}.deb"
+          name_deb="Cub-${version}.deb"
           path_deb="composeApp/build/compose/binaries/main-release/deb/${name}"
-          name_rpm="VacApp-${version}.rpm"
+          name_rpm="Cub-${version}.rpm"
           path_rpm="composeApp/build/compose/binaries/main-release/rpm/${name}"
-          path_appimage="composeApp/build/compose/binaries/main-release/app/VacApp"
-          name_appimage="VacApp-${version}"
+          path_appimage="composeApp/build/compose/binaries/main-release/app/Cub"
+          name_appimage="Cub-${version}"
           echo "VERSION=$version" >> $GITHUB_ENV
           echo "RELEASE_PATH_DEB=$path_deb" >> $GITHUB_ENV
           echo "RELEASE_PATH_RPM=$path_rpm" >> $GITHUB_ENV

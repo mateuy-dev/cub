@@ -1,0 +1,43 @@
+name: Manual osx build
+
+on:
+  workflow_dispatch:
+    { }
+
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: macos-13
+    outputs:
+      file_name: ${{ steps.path_variables.outputs.name }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-gradle
+
+      - name: Create path variables
+        id: path_variables
+        run: |
+          tag=$(git describe --tags --abbrev=0 --match "v*")
+          version=$(grep "appVersion" composeApp/gradle.properties | cut -d'=' -f2)
+          name="Cub-${version}.dmg"
+          path="composeApp/build/compose/binaries/main/dmg/${name}"
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "RELEASE_PATH=$path" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=$name" >> $GITHUB_ENV
+          echo "name=$name" >> $GITHUB_OUTPUT
+      - name: Create DMG
+        run: ./gradlew :composeApp:packageDmg
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.RELEASE_PATH }}
+          retention-days: 1
+

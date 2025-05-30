@@ -1,4 +1,4 @@
-rootProject.name = "SaSaga"
+rootProject.name = "Cub"
 
 pluginManagement {
     repositories {
