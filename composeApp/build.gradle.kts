@@ -85,3 +85,4 @@ compose.desktop {
             }
         }
     }
+}
