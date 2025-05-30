@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.compose)
 }
 
+val appVersionName get() = project.properties["appVersionName"].toString()
+val appVersionCode get() = project.properties["appVersionCode"].toString().toInt()
+
 kotlin {
     jvmToolchain(21)
     jvm()
@@ -48,21 +51,37 @@ compose.desktop {
         mainClass = "MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "Cube"
-            packageVersion = "1.0.0"
-            includeAllModules = true
 
-            linux {
-                iconFile.set(project.file("desktopAppIcons/LinuxIcon.png"))
+            nativeDistributions {
+                packageName = "Cub"
+                packageVersion = appVersionName
+                linux {
+                    iconFile.set(project.file("desktopAppIcons/LinuxIcon.png"))
+                    rpmLicenseType = "Copyright"
+                    menuGroup = "Cub"
+                    appCategory = "Office"
+                    targetFormats(TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage)
+
+                }
+                windows {
+                    iconFile.set(project.file("desktopAppIcons/WindowsIcon.ico"))
+                    perUserInstall = true
+                    menuGroup = "Cub"
+                    upgradeUuid = "d385c37d-d496-46d9-a85b-a8818ce896f7".uppercase()
+                    targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.AppImage)
+
+                }
+                macOS {
+                    iconFile.set(project.file("desktopAppIcons/MacosIcon.icns"))
+                    bundleID = "dev.mateuy.cub.desktopApp"
+                    targetFormats(TargetFormat.Dmg)
+
+                }
             }
-            windows {
-                iconFile.set(project.file("desktopAppIcons/WindowsIcon.ico"))
-            }
-            macOS {
-                iconFile.set(project.file("desktopAppIcons/MacosIcon.icns"))
-                bundleID = "dev.mateuy.cube.desktopApp"
+            buildTypes.release.proguard {
+                version.set("7.4.0")
+                configurationFiles.from(project.file("compose-desktop.pro"))
+                isEnabled = false
             }
         }
     }
-}
